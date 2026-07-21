@@ -1,24 +1,29 @@
-name: Deploy ScriptFlow Next.js
+name: Deploy ScriptFlow
 
 on:
   push:
-    branches: [supabase]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - uses: supabase/setup-cli@v2
         with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm run build
-      - uses: supabase/setup-cli@v1
-        with:
-          version: 1.4.0
+          supabase_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
       - run: supabase db push
         env:
-          POSTGRES_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - uses: amondnet/vercel-action@v25
+        if: vars.VERCEL_PROJECT_ID != ''
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
