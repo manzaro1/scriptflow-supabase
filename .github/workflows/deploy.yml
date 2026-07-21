@@ -1,0 +1,24 @@
+name: Deploy ScriptFlow Next.js
+
+on:
+  push:
+    branches: [supabase]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm run build
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 1.4.0
+      - run: supabase db push
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
