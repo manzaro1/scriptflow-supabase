@@ -1,27 +1,21 @@
-import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { createBrowserClient } from '@supabase/ssr'
-import { Database } from '@/lib/types'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'ScriptFlow - AI Screenwriting Platform',
-  description: 'Professional screenwriting with AI assistance',
+  description: 'Professional screenwriting with AI assistance. Write, edit, and perfect your screenplay with AI-powered tools.',
+  keywords: 'screenwriting, film, AI writing, screenplay, script editor',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-background text-foreground antialiased`}>
+        {children}
+      </body>
     </html>
-  )
-}
-
-export function createClient() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
