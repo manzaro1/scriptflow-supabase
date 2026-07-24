@@ -1,63 +1,69 @@
 "use client"
 import { createClient } from "@/lib/supabase/client"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
   const router = useRouter()
+  const supabase = createClient()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError("")
-    const supabase = createClient()
+    setMessage("")
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError(error.message)
-      setLoading(false)
+      setMessage(error.message)
     } else {
       router.push("/dashboard")
+      router.refresh()
     }
+    setLoading(false)
+  }
+
+  const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({ provider: "google" })
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f', padding: 20 }}>
-      <div style={{ width: '100%', maxWidth: 400, background: '#12121a', border: '1px solid #2a2a3a', borderRadius: 16, padding: 36 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4, textAlign: 'center' }}>Welcome back</h1>
-        <p style={{ color: '#7070a0', textAlign: 'center', marginBottom: 32 }}>Sign in to continue writing</p>
-
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <input
-            type="email" placeholder="Email address"
-            value={email} onChange={e => setEmail(e.target.value)} required
-            style={inputStyle}
-          />
-          <input
-            type="password" placeholder="Password"
-            value={password} onChange={e => setPassword(e.target.value)} required
-            style={inputStyle}
-          />
-          {error && <div style={{ color: '#f87171', fontSize: 14, padding: '8px 12px', background: 'rgba(248,113,113,0.1)', borderRadius: 6 }}>{error}</div>}
+    <div className="min-h-screen flex items-center justify-center p-4" style={{background:"var(--background)"}}>
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold" style={{color:"var(--primary)"}}>ScriptFlow</h1>
+          <p className="mt-2" style={{color:"var(--muted-foreground)"}}>Sign in to your account</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl" style={{background:"var(--card)", border:"1px solid var(--border)"}}>
+          <div>
+            <label className="block text-sm mb-1" style={{color:"var(--muted-foreground)"}}>Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+              className="w-full px-3 py-2 rounded-lg outline-none" style={{background:"var(--input)", color:"var(--foreground)", border:"1px solid var(--border)"}} />
+          </div>
+          <div>
+            <label className="block text-sm mb-1" style={{color:"var(--muted-foreground)"}}>Password</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
+              className="w-full px-3 py-2 rounded-lg outline-none" style={{background:"var(--input)", color:"var(--foreground)", border:"1px solid var(--border)"}} />
+          </div>
+          {message && <p className="text-sm text-red-400">{message}</p>}
           <button type="submit" disabled={loading}
-            style={{ background: loading ? '#4a4a6a' : '#6366f1', color: '#fff', padding: '12px', borderRadius: 8, fontWeight: 600, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 15 }}>
+            className="w-full py-2 rounded-lg font-semibold text-white disabled:opacity-50"
+            style={{background:"var(--primary)"}}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
+          <button type="button" onClick={handleGoogle}
+            className="w-full py-2 rounded-lg font-semibold border"
+            style={{borderColor:"var(--border)", color:"var(--foreground)"}}>
+            Continue with Google
+          </button>
         </form>
-
-        <p style={{ textAlign: 'center', marginTop: 20, color: '#7070a0', fontSize: 14 }}>
-          Don't have an account? <Link href="/signup" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>Sign up free</Link>
+        <p className="text-center text-sm" style={{color:"var(--muted-foreground)"}}>
+          No account? <Link href="/auth/signup" className="underline" style={{color:"var(--primary)"}}>Create one</Link>
         </p>
       </div>
     </div>
   )
-}
-
-const inputStyle: React.CSSProperties = {
-  background: '#1e1e2e', border: '1px solid #2a2a3a', borderRadius: 8,
-  padding: '12px 14px', color: '#f0f0f5', fontSize: 15, width: '100%', outline: 'none',
 }
