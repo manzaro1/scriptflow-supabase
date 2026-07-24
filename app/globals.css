@@ -1,3 +1,83 @@
-.item:hover {
-  background: #f0fdf4;
+@import 'tailwindcss'
+
+@theme {
+  --color-background: #0a0a0f;
+  --color-foreground: #f5f5f5;
+  --color-card: #13131a;
+  --color-card-foreground: #f5f5f5;
+  --color-primary: #6366f1;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #1c1c27;
+  --color-secondary-foreground: #a1a1aa;
+  --color-muted: #27273a;
+  --color-muted-foreground: #71717a;
+  --color-accent: #6366f1;
+  --color-accent-foreground: #ffffff;
+  --color-border: #27273a;
+  --color-input: #1c1c27;
+  --color-ring: #6366f1;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-destructive: #ef4444;
+  --radius: 0.5rem;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+/* Screenplay Editor Styles */
+.screenplay-page {
+  background: #fff;
+  color: #000;
+  min-height: 100vh;
+  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+  font-size: 12pt;
+  line-height: 1.5;
+}
+
+.screenplay-page .scene-heading {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 24px 0 12px 0;
+}
+
+.screenplay-page .action {
+  margin: 12px 0;
+  max-width: 100%;
+}
+
+.screenplay-page .character {
+  margin: 12px 0 0 2.5in;
+  text-transform: uppercase;
+}
+
+.screenplay-page .dialogue {
+  margin: 0 1.5in 12px 1.5in;
+}
+
+.screenplay-page .parenthetical {
+  margin: 0 2in 0 2in;
+  font-style: italic;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-muted);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* Transitions */
+.transition-colors {
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
