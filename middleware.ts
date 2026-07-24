@@ -1,32 +1,45 @@
-import { createSupabaseServerClient } from '@/lib/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const { supabase, supabaseResponse } = createSupabaseServerClient(request)
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) { return request.cookies.get(name)?.value },
+        set(name, value, options) {
+          request.cookies.set({ name, value })
+          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse.cookies.set({ name, value, ...options })
+        },
+        remove(name, options) {
+          request.cookies.set({ name, value: '' })
+          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const publicPaths = ['/', '/login', '/signup', '/auth']
-  const isPublic = publicPaths.some(p => request.nextUrl.pathname.startsWith(p))
+  const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
+  const isPublic = request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/api/')
 
-  if (!user && !isPublic) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+  if (!user && !isAuthPage && !isPublic) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // Redirect logged-in users away from auth pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  if (user && isAuthPage) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/health|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }
