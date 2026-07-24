@@ -1,75 +1,47 @@
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import Link from 'next/link'
 
-export default async function HomePage() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
+export default function Home() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <header style={{ padding: "1rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ fontSize: "1.25rem", fontWeight: "bold", color: "var(--primary)" }}>
-          ScriptFlow
-        </div>
-        <nav style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
-          {user ? (
-            <Link href="/dashboard" style={{ color: "var(--foreground)", textDecoration: "none", fontSize: "0.95rem" }}>
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/login" style={{ color: "var(--muted-foreground)", textDecoration: "none", fontSize: "0.95rem" }}>
-                Sign in
-              </Link>
-              <Link href="/signup" style={{ background: "var(--primary)", color: "white", padding: "0.5rem 1rem", borderRadius: "6px", textDecoration: "none", fontSize: "0.95rem" }}>
-                Get Started
-              </Link>
-            </>
-          )}
-        </nav>
-      </header>
-
-      {/* Hero */}
-      <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "4rem 2rem", textAlign: "center" }}>
-        <div style={{ maxWidth: "640px" }}>
-          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: "bold", lineHeight: 1.1, marginBottom: "1.5rem" }}>
-            AI-Powered Screenwriting{" "}
-            <span style={{ color: "var(--primary)" }}>Built for Film</span>
+    <div style={{ minHeight: '100vh', background: '#0a0a0f', color: '#f0f0f5', padding: '60px 20px' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <h1 style={{ fontSize: 56, fontWeight: 900, marginBottom: 16, letterSpacing: '-''2px' }}>
+            <span style={{ color: '#6366f1' }}>Script</span><span style={{ color: '#f0f0f5' }}>Flow</span>
           </h1>
-          <p style={{ fontSize: "1.125rem", color: "var(--muted-foreground)", marginBottom: "2.5rem", lineHeight: 1.7 }}>
-            Write studio-ready screenplays with intelligent AI assistance. Format perfectly, develop characters, and bring your stories to life—all in one platform.
+          <p style={{ fontSize: 20, color: '#7070a0', marginBottom: 32 }}>
+            AI-powered screenwriting. Write, collaborate, and perfect your screenplay with intelligent assistance.
           </p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/signup" style={{ background: "var(--primary)", color: "white", padding: "0.875rem 2rem", borderRadius: "8px", textDecoration: "none", fontSize: "1rem", fontWeight: "500" }}>
-              Start Writing Free
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+            <Link href="/signup" style={{ background: '#6366f1', color: '#fff', padding: '12px 28px', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: 16 }}>
+              Get Started Free
             </Link>
-            <Link href="/login" style={{ background: "var(--secondary)", color: "var(--foreground)", padding: "0.875rem 2rem", borderRadius: "8px", textDecoration: "none", fontSize: "1rem" }}>
+            <Link href="/login" style={{ background: 'transparent', color: '#f0f0f5', padding: '12px 28px', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: 16, border: '1px solid #2a2a3a' }}>
               Sign In
             </Link>
           </div>
         </div>
 
-        {/* Features */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginTop: "5rem", maxWidth: "900px", width: "100%" }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20, marginBottom: 40 }}>
           {[
-            { title: "Smart Formatting", desc: "Industry-standard screenplay format automatically" },
-            { title: "AI Writing Assistant", desc: "Get suggestions and overcome writer's block" },
-            { title: "Character Chat", desc: "Talk to your characters to deepen their voices" },
-            { title: "Real-time Collaboration", desc: "Work with co-writers seamlessly" },
-          ].map(({ title, desc }) => (
-            <div key={title} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", padding: "1.5rem", textAlign: "left" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "0.5rem" }}>{title}</h3>
-              <p style={{ fontSize: "0.875rem", color: "var(--muted-foreground)", lineHeight: 1.5 }}>{desc}</p>
+            { title: '📝 Professional Format', desc: 'Industry-standard screenplay formatting automatically applied as you write.' },
+            { title: '🤖 AI Assistance', desc: 'Get intelligent suggestions for dialogue, scene descriptions, and plot twists.' },
+            { title: '👥 Real-time Collaboration', desc: 'Invite co-writers with role-based permissions. Work together seamlessly.' },
+            { title: '📱 Telegram Bot', desc: 'Review and edit scripts directly from your phone via Telegram.' },
+            { title: '🎬 Scene Breakdown', desc: 'Auto-generate shot lists, locations, and character requirements.' },
+            { title: '💾 Version History', desc: 'Never lose work. Every change is saved and recoverable.' },
+          ].map((f, i) => (
+            <div key={i} style={{ background: '#12121a', border: '1px solid #2a2a3a', borderRadius: 12, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>{f.title.split(' ')[0]}</div>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>{f.title.slice(2)}</div>
+              <div style={{ color: '#7070a0', fontSize: 14, lineHeight: 1.5 }}>{f.desc}</div>
             </div>
           ))}
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer style={{ padding: "2rem", textAlign: "center", color: "var(--muted-foreground)", fontSize: "0.875rem", borderTop: "1px solid var(--border)" }}>
-        ScriptFlow — Built for filmmakers and screenwriters.
-      </footer>
+        <div style={{ textAlign: 'center', color: '#7070a0', fontSize: 14 }}>
+          Built on Supabase • Powered by AI • Available everywhere
+        </div>
+      </div>
     </div>
   )
 }
