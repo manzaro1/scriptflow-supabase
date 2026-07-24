@@ -1,14 +1,35 @@
-import { createClient } from '@/utils/supabase-server'
+import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
-  const { email, title, genre } = await request.json()
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return new Response('Unauthorized', { status: 401 })
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data } = await supabase.from('scripts').insert({
-    user_id: user.id, title, genre, status: 'draft'
-  }).select().single()
+  const { data, error } = await supabase
+    .from('scripts')
+    .select('id, title, genre, logline, created_at, updated_at')
+    .eq('user_id', user.id)
+    .order('updated_at', { ascending: false })
 
-  return Response.json(data)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ data })
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await request.json()
+  const { title = 'Untitled Script', genre = null, logline = null, content = null } = body
+
+  const { data, error } = await supabase
+    .from('scripts')
+    .insert({ user_id: user.id, title, genre, logline, content })
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ data }, { status: 201 })
 }
