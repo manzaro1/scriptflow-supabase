@@ -1,83 +1,90 @@
-@import 'tailwindcss'
+@import "tailwindcss";
 
-@theme {
-  --color-background: #0a0a0f;
-  --color-foreground: #f5f5f5;
-  --color-card: #13131a;
-  --color-card-foreground: #f5f5f5;
-  --color-primary: #6366f1;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #1c1c27;
-  --color-secondary-foreground: #a1a1aa;
-  --color-muted: #27273a;
-  --color-muted-foreground: #71717a;
-  --color-accent: #6366f1;
-  --color-accent-foreground: #ffffff;
-  --color-border: #27273a;
-  --color-input: #1c1c27;
-  --color-ring: #6366f1;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-destructive: #ef4444;
-  --radius: 0.5rem;
+:root {
+  --background: #0a0a0f;
+  --foreground: #f0f0f5;
+  --card: #12121a;
+  --card-foreground: #e0e0ea;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1e2e;
+  --secondary-foreground: #a0a0b8;
+  --muted: #2a2a3a;
+  --muted-foreground: #7070a0;
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  --border: #2a2a3a;
+  --input: #1e1e2e;
+  --ring: #6366f1;
 }
 
 * {
-  border-color: var(--color-border);
+  box-sizing: border-box;
 }
 
-/* Screenplay Editor Styles */
-.screenplay-page {
-  background: #fff;
-  color: #000;
-  min-height: 100vh;
-  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist), system-ui, sans-serif;
+}
+
+/* Screenplay formatting */
+.screenplay-content {
+  font-family: 'Courier Prime', 'Courier New', monospace;
   font-size: 12pt;
   line-height: 1.5;
+  white-space: pre-wrap;
 }
 
-.screenplay-page .scene-heading {
+.screenplay-content .scene-heading {
   font-weight: bold;
   text-transform: uppercase;
-  margin: 24px 0 12px 0;
+  margin-top: 1em;
 }
 
-.screenplay-page .action {
-  margin: 12px 0;
-  max-width: 100%;
+.screenplay-content .action {
+  margin-bottom: 1em;
 }
 
-.screenplay-page .character {
-  margin: 12px 0 0 2.5in;
-  text-transform: uppercase;
+.screenplay-content .character {
+  margin-left: 2.5in;
+  margin-top: 1em;
 }
 
-.screenplay-page .dialogue {
-  margin: 0 1.5in 12px 1.5in;
+.screenplay-content .dialogue {
+  margin-left: 1.5in;
+  margin-right: 1.5in;
 }
 
-.screenplay-page .parenthetical {
-  margin: 0 2in 0 2in;
+.screenplay-content .parenthetical {
+  margin-left: 2in;
+  margin-right: 2.5in;
   font-style: italic;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-muted);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-foreground);
+.screenplay-content .transition {
+  text-align: right;
+  margin-top: 1em;
 }
 
-/* Transitions */
-.transition-colors {
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+/* Editor styles */
+.editor-textarea {
+  font-family: 'Courier Prime', 'Courier New', monospace !important;
+  font-size: 12pt !important;
+  line-height: 1.6 !important;
+  tab-size: 8 !important;
+  resize: none;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 500px;
+  width: 100%;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
