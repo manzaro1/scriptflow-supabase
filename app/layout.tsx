@@ -1,19 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata: Metadata = {
-  title: 'ScriptFlow - AI Screenwriting Platform',
-  description: 'Professional screenwriting with AI assistance. Write, edit, and perfect your screenplay with AI-powered tools.',
-  keywords: 'screenwriting, film, AI writing, screenplay, script editor',
+  title: 'ScriptFlow - AI-Powered Screenwriting',
+  description: 'Professional screenplay writing with AI assistance',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.className} bg-background text-foreground antialiased`}>
+    <html lang="en">
+      <body className={`${geist.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
