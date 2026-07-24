@@ -1,61 +1,111 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
+"use client"
 
-export default async function Signup({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string; error?: string }>
-}) {
-  const sp = await searchParams
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (user) redirect(sp.next || '/dashboard')
+import { createClient } from "@/lib/supabase/client"
+import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+export default function SignupPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [fullName, setFullName] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage("")
+    const { error } = await supabase.auth.signUp({
+      email, password,
+      options: { data: { full_name: fullName } },
+    })
+    if (error) {
+      setMessage(error.message)
+    } else {
+      setMessage("Check your email to confirm your account!")
+    }
+    setLoading(false)
+  }
+
+  const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    })
+  }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4" style={{background: 'var(--background)'}}>
-      <div className="w-full max-w-md p-8 rounded-2xl" style={{background: 'var(--card)', border: '1px solid var(--border)'}}>
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center text-white font-bold text-xl" style={{background: 'var(--primary)'}}>S</div>
-          <h1 className="text-2xl font-bold">Create Your Account</h1>
-          <p className="mt-2 text-sm" style={{color: 'var(--muted-foreground)'}}>Start writing professional screenplays for free</p>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+      <div style={{ width: "100%", maxWidth: "400px" }}>
+        <h1 style={{ fontSize: "1.75rem", fontWeight: "bold", marginBottom: "0.5rem", textAlign: "center" }}>
+          Create your account
+        </h1>
+        <p style={{ color: "var(--muted-foreground)", textAlign: "center", marginBottom: "2rem" }}>
+          Start writing professional screenplays with AI
+        </p>
+        <button
+          onClick={handleGoogle}
+          style={{
+            width: "100%", padding: "0.75rem", marginBottom: "1.5rem",
+            background: "var(--secondary)", color: "var(--foreground)",
+            border: "1px solid var(--border)", borderRadius: "8px",
+            cursor: "pointer", fontSize: "0.95rem",
+          }}
+        >
+          Continue with Google
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem", color: "var(--muted-foreground)", fontSize: "0.875rem" }}>
+          <hr style={{ flex: 1, borderColor: "var(--border)" }} />
+          <span>or</span>
+          <hr style={{ flex: 1, borderColor: "var(--border)" }} />
         </div>
-
-        {sp.error && (
-          <div className="mb-4 p-3 rounded-lg text-sm" style={{background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)'}}>
-            {sp.error}
-          </div>
-        )}
-
-        <form action="/api/auth/signup" method="POST">
-          <input type="hidden" name="next" value={sp.next || '/dashboard'} />
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{color: 'var(--card-foreground)'}}>Full Name</label>
-              <input name="full_name" type="text" required placeholder="Chinagorom Itiiko"
-                className="w-full px-4 py-3 rounded-xl outline-none transition" style={{background: 'var(--input)', color: 'var(--foreground)', border: '1px solid var(--border)'}} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{color: 'var(--card-foreground)'}}>Email</label>
-              <input name="email" type="email" required placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl outline-none transition" style={{background: 'var(--input)', color: 'var(--foreground)', border: '1px solid var(--border)'}} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{color: 'var(--card-foreground)'}}>Password</label>
-              <input name="password" type="password" required minLength={8} placeholder="Min 8 characters"
-                className="w-full px-4 py-3 rounded-xl outline-none transition" style={{background: 'var(--input)', color: 'var(--foreground)', border: '1px solid var(--border)'}} />
-            </div>
-            <button type="submit" className="w-full py-3 rounded-xl font-bold text-base transition hover:opacity-90" style={{background: 'var(--primary)', color: 'var(--primary-foreground)'}}>
-              Create Account
-            </button>
-          </div>
+        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <input
+            type="text" placeholder="Full name" value={fullName}
+            onChange={(e) => setFullName(e.target.value)} required
+            style={inputStyle}
+          />
+          <input
+            type="email" placeholder="Email address" value={email}
+            onChange={(e) => setEmail(e.target.value)} required
+            style={inputStyle}
+          />
+          <input
+            type="password" placeholder="Password (min 6 chars)" value={password}
+            onChange={(e) => setPassword(e.target.value)} required minLength={6}
+            style={inputStyle}
+          />
+          {message && (
+            <p style={{ color: message.includes("Check") ? "#22c55e" : "#ef4444", fontSize: "0.875rem" }}>{message}</p>
+          )}
+          <button
+            type="submit" disabled={loading}
+            style={{
+              padding: "0.75rem", background: "var(--primary)",
+              color: "var(--primary-foreground)", border: "none",
+              borderRadius: "8px", cursor: "pointer", fontSize: "1rem",
+              fontWeight: "500", opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? "Creating account..." : "Create account"}
+          </button>
         </form>
-
-        <p className="text-center mt-6 text-sm" style={{color: 'var(--muted-foreground)'}}>
-          Already have an account? <Link href="/login" className="font-medium" style={{color: 'var(--primary)'}}>Sign in</Link>
+        <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.875rem", color: "var(--muted-foreground)" }}>
+          Already have an account?{" "}
+          <Link href="/login" style={{ color: "var(--primary)", textDecoration: "none" }}>
+            Sign in
+          </Link>
         </p>
       </div>
-    </main>
+    </div>
   )
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "0.75rem", background: "var(--input)",
+  color: "var(--foreground)", border: "1px solid var(--border)",
+  borderRadius: "8px", fontSize: "0.95rem",
 }
